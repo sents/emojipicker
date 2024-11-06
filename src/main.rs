@@ -1,6 +1,7 @@
 use gtk::gdk::Clipboard;
 use gtk::prelude::{
     BoxExt, DisplayExt, EditableExt, GtkWindowExt, OrientableExt, WidgetExt
+use relm4::actions::{AccelsPlus, RelmAction, RelmActionGroup};
 };
 use relm4::factory::FactoryVecDeque;
 use relm4::{gtk, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
@@ -31,6 +32,8 @@ fn search_emojis(query: &str) -> Vec<&'static Emoji> {
             .collect()
     }
 }
+relm4::new_action_group!(WindowActionGroup, "win");
+relm4::new_stateless_action!(FocusSearchAction, WindowActionGroup, "focus_search");
 
 struct AppModel {
     emojis: FactoryVecDeque<EmojiGridElement>,
@@ -119,6 +122,21 @@ impl SimpleComponent for AppModel {
                                       });
 
         let widgets = view_output!();
+
+        let app = relm4::main_application();
+
+        let action: RelmAction<FocusSearchAction> = RelmAction::new_stateless(glib::clone!(
+            #[strong(rename_to = search_entry)]
+            widgets.search_entry,
+            move |_| {
+                search_entry.grab_focus();
+            }
+        ));
+
+        let mut group = RelmActionGroup::<WindowActionGroup>::new();
+        group.add_action(action);
+        group.register_for_widget(&widgets.main_window);
+        app.set_accelerators_for_action::<FocusSearchAction>(&["<ctrl>f"]);
 
         ComponentParts { model, widgets }
     }
