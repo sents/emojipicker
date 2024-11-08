@@ -47,7 +47,7 @@ impl SimpleComponent for AppModel {
                 set_spacing: 5,
                 set_margin_all: 5,
                 #[name="search_entry"]
-                gtk::Entry {
+                gtk::SearchEntry {
                     connect_changed[sender, debounced_search] => move |entry| {
                         debounced_search((
                             sender.clone(),
