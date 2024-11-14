@@ -7,17 +7,19 @@ use relm4::{
     RelmWidgetExt, SimpleComponent,
 };
 
+pub fn emoji_matches(emoji: &'static Emoji, query: &str) -> bool {
+    emoji.name().to_lowercase().contains(&query.to_lowercase())
+        || emoji
+        .shortcodes()
+        .any(|shortcode| shortcode.to_lowercase().contains(&query.to_lowercase()))
+}
+
 fn search_emojis(query: &str) -> Vec<&'static Emoji> {
     if query.is_empty() {
         emojis::iter().collect()
     } else {
         emojis::iter()
-            .filter(|emoji| {
-                emoji.name().to_lowercase().contains(&query.to_lowercase())
-                    || emoji
-                        .shortcodes()
-                        .any(|shortcode| shortcode.to_lowercase().contains(&query.to_lowercase()))
-            })
+            .filter(|emoji| emoji_matches(emoji, query))
             .collect()
     }
 }

@@ -9,10 +9,12 @@ use relm4::{
 
 use emojis::Emoji;
 mod components;
-use components::emoji_picker::{EmojiPicker, EmojiPickerInput};
+// use components::emoji_picker::{EmojiPicker, EmojiPickerInput};
 
 mod debounce;
 use debounce::make_debounce;
+
+use components::emoji_picker_view::{EmojiPicker, EmojiPickerInput};
 
 relm4::new_action_group!(WindowActionGroup, "win");
 relm4::new_stateless_action!(FocusSearchAction, WindowActionGroup, "focus_search");
@@ -55,13 +57,8 @@ impl SimpleComponent for AppModel {
                         ))
                     },
                 },
-                gtk::ScrolledWindow {
-                    set_vexpand: true,
-                    set_propagate_natural_height: true,
-                    set_max_content_height: 20,
-                    #[local_ref]
-                    emoji_box -> gtk::Box {
-                    }
+                #[local_ref]
+                emoji_box -> gtk::ScrolledWindow {
                 }
             }
         }
